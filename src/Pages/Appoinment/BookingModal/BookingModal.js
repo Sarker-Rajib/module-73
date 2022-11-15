@@ -39,7 +39,12 @@ const BookingModal = ({ treatment, selectedDate, setTreatment }) => {
                         <input className='input w-full my-2 border-slate-500 ' type="text" name="date" value={date} disabled />
                         <select className="select select-bordered w-full" name='slot'>
                             {
-                                slots.map((slot, index) => <option key={index} value={slot}>{slot}</option>)
+                                slots.map((slot, index) => <option
+                                    key={index}
+                                    value={slot}
+                                >
+                                    {slot}
+                                </option>)
                             }
                         </select>
                         <input className='input w-full my-2 border-slate-500 ' type="text" name="name" placeholder='Your Name' />

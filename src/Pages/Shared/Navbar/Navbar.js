@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../../Context/AuthProvider/AuthProvider';
 
 const Navbar = () => {
     const { currentUser, logOut } = useContext(AuthContext);
+    const [darkMode, setDarkMode] = useState();
 
     const handleLogOut = () => {
         logOut()
@@ -11,12 +12,29 @@ const Navbar = () => {
             .catch(error => (console.error(error)))
     };
 
+    useEffect(() => {
+        const body = document.body;
+        
+        if (darkMode) {
+            localStorage.setItem('theme', 'dark');
+        }
+        else {
+            localStorage.removeItem('theme', 'dark');
+            localStorage.setItem('theme', 'cupcake');
+        }
+        
+        const theme = localStorage.getItem('theme');
+        body.setAttribute('data-theme', theme)
+    }, [darkMode])
+
     const menuItems = <React.Fragment>
         <li><Link to="/">Home</Link></li>
         <li><Link to="/appointment">Appointment</Link></li>
         <li><Link to="/about">About</Link></li>
         <li><Link to="/reviews">Reviews</Link></li>
         <li><Link to="/dashboard">Dashboard</Link></li>
+        <li><Link onClick={() => setDarkMode(!darkMode)}>{darkMode ? 'Light-theme' : 'Dark-theme'}</Link></li>
+
         {
             currentUser?.uid ?
                 <li><button onClick={handleLogOut}>Log out</button></li>
