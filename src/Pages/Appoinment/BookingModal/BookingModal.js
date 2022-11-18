@@ -1,9 +1,13 @@
 import { format } from 'date-fns';
-import React from 'react';
+import React, { useContext } from 'react';
+import toast from 'react-hot-toast';
+import { AuthContext } from '../../../Context/AuthProvider/AuthProvider';
 
-const BookingModal = ({ treatment, selectedDate, setTreatment }) => {
+const BookingModal = ({ treatment, selectedDate, setTreatment, refetch }) => {
     const date = format(selectedDate, 'PP')
     const { name, slots } = treatment;
+    const { currentUser } = useContext(AuthContext)
+    // console.log(currentUser);
 
     const handleBooking = (e) => {
         e.preventDefault();
@@ -14,16 +18,35 @@ const BookingModal = ({ treatment, selectedDate, setTreatment }) => {
         const number = form.number.value;
 
         const booking = {
-            selectedDate: date,
+            appoinmentDate: date,
             treatment: name,
             patient: ptname,
             slot,
             email,
             number,
         }
+
+        fetch('http://localhost:5000/bookings', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify(booking)
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.acknowledged) {                  
+                    setTreatment(null);
+                    toast.success('booking confirmed')
+                    refetch();
+                }
+                else {
+                    setTreatment(null);
+                    toast.error(data.message)
+                }
+            })
         // console.log(slot, name, email, number);
-        console.log(booking);
-        setTreatment(null);
+        // console.log(booking);
     };
 
     return (
@@ -47,8 +70,8 @@ const BookingModal = ({ treatment, selectedDate, setTreatment }) => {
                                 </option>)
                             }
                         </select>
-                        <input className='input w-full my-2 border-slate-500 ' type="text" name="name" placeholder='Your Name' />
-                        <input className='input w-full my-2 border-slate-500 ' type="email" name="email" placeholder='Your email' />
+                        <input defaultValue={currentUser?.displayName} disabled={currentUser?.displayName !== null} className='input w-full my-2 border-slate-500 ' type="text" name="name" placeholder='Your Name' />
+                        <input defaultValue={currentUser?.email} disabled className='input w-full my-2 border-slate-500 ' type="email" name="email" placeholder='Your email' />
                         <input className='input w-full my-2 border-slate-500 ' type="text" name="number" placeholder='Your Number' />
                         <input className='btn w-full mt-4' type="Submit" placeholder='' />
                     </form>

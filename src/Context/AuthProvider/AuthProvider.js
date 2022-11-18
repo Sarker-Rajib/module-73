@@ -6,7 +6,7 @@ export const AuthContext = createContext();
 const auth = getAuth(app)
 
 const AuthProvider = ({ children }) => {
-    const [currentUser, serCurrentUser] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     const createUser = (email, password) => {
@@ -24,19 +24,21 @@ const AuthProvider = ({ children }) => {
         return signOut(auth);
     };
 
-    const updateUser = (userInfo) => {
-        setLoading(true);
-        return updateProfile(currentUser, userInfo);
-    };
-
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, user => {
-            serCurrentUser(user);
+            setCurrentUser(user);
             setLoading(false);
         });
 
-        return () => unsubscribe();
-    }, [])
+        return () => {
+            unsubscribe();
+        };
+    }, [currentUser])
+
+    const updateUser = (profile) => {
+        setLoading(true);
+        return updateProfile(auth.currentUser, profile);
+    };
 
     const authInfo = {
         createUser,

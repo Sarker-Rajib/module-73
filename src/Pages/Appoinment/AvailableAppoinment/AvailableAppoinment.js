@@ -1,18 +1,39 @@
+import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import Loading from '../../Shared/Loading/Loading';
 import BookingModal from '../BookingModal/BookingModal';
 import AppoinmentOption from './AppoinmentOption';
 
 
 const AvailableAppoinment = ({ selectedDate }) => {
-    const [appoinmentOption, setAppoinmentOption] = useState([]);
+    // const [appoinmentOption, setAppoinmentOption] = useState([]);
     const [treatment, setTreatment] = useState(null);
+    const date = format(selectedDate, 'PP')
 
-    useEffect(() => {
-        fetch('http://localhost:5000/appoinmentOptions')
-            .then(res => res.json())
-            .then(data => setAppoinmentOption(data));
-    }, []);
+    const { data: appoinmentOption = [], refetch , isLoading} = useQuery({
+        queryKey: ['appoinmentOption', date],
+        queryFn: async () => {
+            const res = await fetch(`http://localhost:5000/v2/appoinmentOptions?date=${date}`);
+            const data = res.json();
+            return data;
+        }
+    });
+
+    if (isLoading) {
+        return <Loading></Loading>        
+    }
+    // const { data: appoinmentOption = [] } = useQuery({
+    //     queryKey: ['appoinmentOption'],
+    //     queryFn: () => fetch('http://localhost:5000/appoinmentOptions')
+    //         .then(res => res.json())
+    // });
+
+    // useEffect(() => {
+    //     fetch('http://localhost:5000/appoinmentOptions')
+    //         .then(res => res.json())
+    //         .then(data => setAppoinmentOption(data));
+    // }, []);
 
     return (
         <div className='my-16'>
@@ -33,6 +54,7 @@ const AvailableAppoinment = ({ selectedDate }) => {
                         selectedDate={selectedDate}
                         treatment={treatment}
                         setTreatment={setTreatment}
+                        refetch={refetch}
                     ></BookingModal>
                 }
             </div>
