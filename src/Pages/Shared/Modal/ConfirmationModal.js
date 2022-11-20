@@ -5,6 +5,7 @@ const ConfirmationModal = ({ title, message, closeModal, handleDeleteDoctor, del
     return (
         <div>
             <input type="checkbox" id="deleteDoctor" className="modal-toggle" />
+            
             <div className="modal modal-bottom sm:modal-middle">
                 <div className="modal-box">
                     <h3 className="font-bold text-lg">{title}</h3>

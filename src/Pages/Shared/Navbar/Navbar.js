@@ -20,7 +20,7 @@ const Navbar = () => {
         }
         else {
             localStorage.removeItem('theme', 'dark');
-            localStorage.setItem('theme', 'cupcake');
+            localStorage.setItem('theme', 'doctortheme');
         }
 
         const theme = localStorage.getItem('theme');
